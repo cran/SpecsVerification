@@ -1,7 +1,7 @@
 ################################
 #
 # ANALYZE DIFFERENCE IN THE FAIR BRIER SCORE BETWEEN TWO ENSEMBLE
-# FORECASTING SYSTEMS FOR THE SAME OBSERVATION
+# FORECASTING SYSTEMS FOR THE SAME OBSERVATION BY SKILL SCORE 1 - S / S.ref
 #
 # ens     ... ensemble to be tested (matrix of dimension N*K)
 # ens.ref ... reference forecast ensemble (matrix of dimension N*K.ref)
@@ -12,13 +12,11 @@
 #             event indicators, i.e. 0 or 1
 #
 # return value: a list with elements
-#     * br.diff ... the fair Brier Score difference
-#     * sampling.quantiles ... if `probs` were defined, the corresponding
-#                              quantiles of the sampling distribution 
-#                              of `br.diff`
+#     * br.ss ... the fair Brier Skill Score 
+#     * br.sigma ... approximate standard deviation of the skill score
 #
 ################################
-FairBrierDiff <- function(ens, ens.ref, obs, tau=0.5, probs=NA) {
+FairBrierSs <- function(ens, ens.ref, obs, tau=0.5) {
 
   # sanity checks
   if (class(ens) == "data.frame") {
@@ -44,25 +42,19 @@ FairBrierDiff <- function(ens, ens.ref, obs, tau=0.5, probs=NA) {
   K <- ncol(ens)
   K.ref <- ncol(ens.ref)
 
-  # calculate fair Brier score differences
+  # calculate fair Brier skill score 
   br.ens <- FairBrier(ens, obs, tau)
   br.ref <- FairBrier(ens.ref, obs, tau)
-  br.diff <- br.ref - br.ens
-  mean.br.diff <- mean(br.diff)
-
-  # quantiles of the sampling distribution 
-  cis <- NA
-  if (!any(is.na(probs))) {
-    stopifnot(all(probs > 0 & probs < 1))
-    probs <- sort(probs)
-    cis <- qt(probs, df=N-1) * sd(br.diff) / sqrt(N) + mean.br.diff
-    names(cis) <- paste(probs)
-  }
-
-  # p value of paired one-sided t test for positive score difference
-  p.value <- 1-pt(mean.br.diff / sd(br.diff) * sqrt(N), df=N-1)
+  bss <- 1 - mean(br.ens) / mean(br.ref)
+  bss.sigma <- 1 / sqrt(N) * sqrt( var(br.ens) / mean(br.ref)^2 + 
+         var(br.ref) * mean(br.ens)^2 / mean(br.ref)^4 - 
+         2 * cov(br.ens, br.ref) * mean(br.ens) / mean(br.ref)^3)
 
   #return
-  list(br.diff=mean.br.diff, sampling.quantiles=cis, p.value=p.value)
+  list(bss=bss, bss.sigma=bss.sigma)
+
+
+  #return
+  list(bss=bss, bss.sigma=bss.sigma)
 }
 

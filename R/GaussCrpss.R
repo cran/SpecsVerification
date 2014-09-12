@@ -1,17 +1,16 @@
 ################################
 #
 # ANALYZE DIFFERENCE IN THE CRPS BETWEEN TWO FORECASTS ISSUED AS NORMAL
-# DISTRIBUTIONS FOR THE SAME OBSERVATIONS
+# DISTRIBUTIONS FOR THE SAME OBSERVATIONS BY SKILL SCORE 1 - S / S.ref
 #
 # mean     ... forecast mean (vector of length N)
 # sd       ... forecast standard deviation (vector of length N)
 # mean.ref ... mean of the reference forecast (vector of length N)
 # sd.ref   ... standard deviation of the reference forecast (vector of length N)
 # obs      ... observations (vector of length N)
-# probs    ... quantiles of the sampling distribution
 #
 ################################
-GaussCrpsDiff <- function(mean, sd, mean.ref, sd.ref, obs, probs=NA) {
+GaussCrpss <- function(mean, sd, mean.ref, sd.ref, obs) {
 
   # transform data frames and matrices to vectors
   mean <- c(as.matrix(mean))
@@ -45,27 +44,18 @@ GaussCrpsDiff <- function(mean, sd, mean.ref, sd.ref, obs, probs=NA) {
   }
 
   # calculate crps difference
-  crps <- GaussCrps(mean, sd, obs)
+  crps.ens <- GaussCrps(mean, sd, obs)
   crps.ref <- GaussCrps(mean.ref, sd.ref, obs)
-  crps.diff <- crps.ref - crps
-  mean.crps.diff <- mean(crps.diff, na.rm=TRUE)
 
-  # reduce N if there are NA's
-  N <- N - sum(is.na(crps.diff))
-
-  # quantiles of the sampling distribution 
-  cis <- NA
-  if (!any(is.na(probs))) {
-    stopifnot(all(probs > 0 & probs < 1))
-    probs <- sort(probs)
-    cis <- qt(probs, df=N-1) * sd(crps.diff, na.rm=TRUE) / sqrt(N) + mean.crps.diff
-    names(cis) <- paste(probs)
-  }
-
-  # p value of paired one-sided t test for positive score difference
-  p.value <- 1-pt(mean.crps.diff / sd(crps.diff) * sqrt(N), df=N-1)
+  crpss <- 1 - mean(crps.ens) / mean(crps.ref)
+  crpss.sigma <- 1 / sqrt(N) * sqrt( var(crps.ens) / mean(crps.ref)^2 + 
+         var(crps.ref) * mean(crps.ens)^2 / mean(crps.ref)^4 - 
+         2 * cov(crps.ens, crps.ref) * mean(crps.ens) / mean(crps.ref)^3)
 
   #return
-  list(crps.diff=mean.crps.diff, sampling.quantiles=cis, p.value=p.value)
+  list(crpss=crpss, crpss.sigma=crpss.sigma)
 }
+
+
+
 

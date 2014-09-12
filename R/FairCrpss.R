@@ -1,15 +1,14 @@
 ################################
 #
 # ANALYZE DIFFERENCE IN THE FAIR CRPS BETWEEN TWO ENSEMBLE
-# FORECASTING SYSTEMS FOR THE SAME OBSERVATIONS
+# FORECASTING SYSTEMS FOR THE SAME OBSERVATIONS BY SKILL SCORE
 #
 # ens     ... the ensemble (matrix of dimension N*K)
 # ens.ref ... the reference ensemble (matrix of dimension N*K.ref)
 # obs     ... observations (vector of length N)
-# probs   ... quantiles of the sampling distribution
 #
 ################################
-FairCrpsDiff <- function(ens, ens.ref, obs, probs=NA) {
+FairCrpss <- function(ens, ens.ref, obs) {
 
   # sanity checks
   if (class(ens) == "data.frame") {
@@ -37,23 +36,12 @@ FairCrpsDiff <- function(ens, ens.ref, obs, probs=NA) {
   # calculate fair crps difference
   crps.ens <- FairCrps(ens, obs)
   crps.ref <- FairCrps(ens.ref, obs)
-  crps.diff <- crps.ref - crps.ens
-  mean.crps.diff <- mean(crps.diff)
-
-
-  # quantiles of the sampling distribution 
-  cis <- NA
-  if (!any(is.na(probs))) {
-    stopifnot(all(probs > 0 & probs < 1))
-    probs <- sort(probs)
-    cis <- qt(probs, df=N-1) * sd(crps.diff) / sqrt(N) + mean.crps.diff
-    names(cis) <- paste(probs)
-  }
-
-  # p value of paired one-sided t test for positive score difference
-  p.value <- 1-pt(mean.crps.diff / sd(crps.diff) * sqrt(N), df=N-1)
+  crpss <- 1 - mean(crps.ens) / mean(crps.ref)
+  crpss.sigma <- 1 / sqrt(N) * sqrt( var(crps.ens) / mean(crps.ref)^2 + 
+         var(crps.ref) * mean(crps.ens)^2 / mean(crps.ref)^4 - 
+         2 * cov(crps.ens, crps.ref) * mean(crps.ens) / mean(crps.ref)^3)
 
   #return
-  list(crps.diff=mean.crps.diff, sampling.quantiles=cis, p.value=p.value)
+  list(crpss=crpss, crpss.sigma=crpss.sigma)
 }
 

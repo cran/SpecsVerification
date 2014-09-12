@@ -57,14 +57,11 @@ function(probs, obs, bins=10, nboot=500,
   #
   # change log:
   #
-  #  2014/05/01
-  #  * removed multicore dependency to meet CRAN policies
-  #
   #  2013/12/02
   #  * manual definition of bin-breaks
   #  * manual definition of consistency intervals
   #  * sanity checks
-  #  * multicore option for resampling
+  #  * parallel option for resampling
   #
   #  2013/10/31:
   #  * return summary data as data frame
@@ -101,6 +98,7 @@ function(probs, obs, bins=10, nboot=500,
   n <- length(obs)
   nboot <- floor(nboot)
   cons.probs <- sort(cons.probs)
+
 
   #############################################
   # reliability analysis

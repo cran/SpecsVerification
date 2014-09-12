@@ -1,15 +1,14 @@
 ################################
 #
-# ANALYZE DIFFERENCE IN THE CRPS BETWEEN TWO DRESSED ENSEMBLES
-# FOR THE SAME VERIFICATION
+# ANALYZE CRPS IMPROVEMENT BETWEEN TWO DRESSED ENSEMBLES FOR THE SAME
+# VERIFICATION BY THE SKILL SCORE 1 - S / S.ref
 #
 # ens     ... dressed ensemble (object of class `dressed.ens`)
 # ens.ref ... dressed reference ensemble (object of class `dressed.ens`)
 # obs     ... verifications (vector of length N)
-# probs   ... quantiles of the sampling distribution
 #
 ################################
-DressCrpsDiff <- function(dressed.ens, dressed.ens.ref, obs, probs=NA) {
+DressCrpss <- function(dressed.ens, dressed.ens.ref, obs) {
 
   # sanity checks
   if (class(obs) == "data.frame") {
@@ -32,25 +31,15 @@ DressCrpsDiff <- function(dressed.ens, dressed.ens.ref, obs, probs=NA) {
   K <- ncol(ens)
   K.ref <- ncol(ens.ref)
 
-  # calculate crps difference
+  # calculate crpss
   crps.ens <- DressCrps(dressed.ens, obs)
   crps.ref <- DressCrps(dressed.ens.ref, obs)
-  crps.diff <- crps.ref - crps.ens
-  mean.crps.diff <- mean(crps.diff)
-
-  # quantiles of the sampling distribution 
-  cis <- NA
-  if (!any(is.na(probs))) {
-    stopifnot(all(probs > 0 & probs < 1))
-    probs <- sort(probs)
-    cis <- qt(probs, df=N-1) * sd(crps.diff) / sqrt(N) + mean.crps.diff
-    names(cis) <- paste(probs)
-  }
-
-  # p value of paired one-sided t test for positive score difference
-  p.value <- 1-pt(mean.crps.diff / sd(crps.diff) * sqrt(N), df=N-1)
+  crpss <- 1 - mean(crps.ens) / mean(crps.ref)
+  crpss.sigma <- 1 / sqrt(N) * sqrt( var(crps.ens) / mean(crps.ref)^2 + 
+         var(crps.ref) * mean(crps.ens)^2 / mean(crps.ref)^4 - 
+         2 * cov(crps.ens, crps.ref) * mean(crps.ens) / mean(crps.ref)^3)
 
   #return
-  list(crps.diff=mean.crps.diff, sampling.quantiles=cis, p.value=p.value)
+  list(crpss=crpss, crpss.sigma=crpss.sigma)
 }
 
