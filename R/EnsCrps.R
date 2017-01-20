@@ -1,27 +1,33 @@
-################################
-#
-# THE CONTINUOUSLY RANKED PROBABILITY SCORE FOR ENSEMBLE FORECASTS
-#
-# ens ... ensemble values (matrix of dimension N*K)
-# obs ... observations (vector of length N)
-#
-################################
-EnsCrps <- function(ens, obs) {
+#' Calculate the ensemble-adjusted Continuous Ranked Probability Score (CRPS)
+#'
+#' @rdname EnsCrps
+#' @param ens a N*R matrix representing N time instances of real-valued R-member ensemble forecasts
+#' @param obs a numeric vector of length N with real-valued observations
+#' @param R.new positive number, can be `Inf`, ensemble size for which the scores should be adjusted, default is NA for no adjustment
+#' @return numeric vector of length N with the ensemble-adjusted CRPS values
+#' @details `FairCrps(ens, obs)` returns `EnsCrps(ens, obs, R.new=Inf)`
+#' @examples
+#' data(eurotempforecast)
+#' mean(EnsCrps(ens, obs, R.new=Inf))
+#' @seealso EnsBrier, EnsRps, DressCrps, GaussCrps, ScoreDiff, SkillScore
+#' @references Ferro CAT, Richardson SR, Weigel AP (2008) On the effect of ensemble size on the discrete and continuous ranked probability scores. Meteorological Applications. http://dx.doi.org/10.1002/met.45
+#' @export
+EnsCrps = function(ens, obs, R.new=NA) {
 
-  # pre-processing
-  l <- Preprocess(ens=ens, obs=obs)
-  ens <- l[["ens"]]
-  obs <- l[["obs"]]
+  stopifnot(is.matrix(ens), 
+            nrow(ens) == length(obs), 
+            length(R.new)==1)
 
-  N <- length(obs)
-  K <- apply(ens, 1, function(x) length(x[!is.na(x)]))
-  K[K==0] <- NA
+  crps = enscrps_cpp(ens, obs, R.new)
 
-  crps <- sapply(1:N, function(i) 
-            mean(abs(ens[i,] - obs[i]), na.rm=TRUE) - 
-            sum(dist(ens[i,]), na.rm=TRUE) / (K[i]^2))
-  crps[is.nan(crps)] <- NA
-  
+  # return the vector of crps
   return(crps)
+
 }
 
+
+#' @rdname EnsCrps
+#' @export
+FairCrps = function(ens, obs) {
+  return(EnsCrps(ens, obs, R.new=Inf))
+}

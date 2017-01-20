@@ -1,3 +1,18 @@
+#' Plot a series forecast distributions of dressed ensembles
+#'
+#' @param dressed.ens An object of class `dressed.ens`. See ?DressEnsemble for details.
+#' @param add logical, default=FALSE. If TRUE, no new plotting device is created and everything is added to an existing device.
+#' @param obs A vector of length N, default=NULL. The verifying observations corresponding to the individual ensemble forecasts. If a vector of length N is provided (N = nrow(dressed.ens[["ens"]]), the values are added to the plot as markers.
+#' @param plot.ens logical, default=FALSE. If TRUE, the centers of the individual dressing kernels are indicated by markers.
+#' @param plot.ker logical, default=FALSE. If TRUE, the individual dressing kernels are plotted.
+#' @return none
+#' @examples
+#' data(eurotempforecast)
+#' d.ens <- DressEnsemble(ens)
+#' PlotDressedEns(d.ens, add=FALSE, obs=obs, plot.ens=FALSE, plot.ker=TRUE)
+#' @seealso DressEnsemble
+#' @export
+
 # plot a dressed ensemble
 PlotDressedEns <- function(dressed.ens, add=FALSE, obs=NULL, plot.ens=FALSE, plot.ker=FALSE) {
 

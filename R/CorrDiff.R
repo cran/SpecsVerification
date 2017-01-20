@@ -1,69 +1,102 @@
-################################
-#
-# ANALYZE DIFFERENCE IN THE CORRELATION COEFFICIENT BETWEEN TWO ENSEMBLE MEANS
-# FOR THE SAME OBSERVATIONS
-#
-# ens     ... the ensemble (matrix of dimension N*K)
-# ens.ref ... the reference ensemble (matrix of dimension N*K.ref)
-# obs     ... observations (vector of length N)
-# sign.level ... significance level of the confidence interval
-#
-################################
-CorrDiff <- function(ens, ens.ref, obs, sign.level=0.05) {
+#' Calculate correlation difference between a forecast and a reference forecast, and assess uncertainty
+#'
+#' @param fcst vector of forecasts
+#' @param fcst.ref vector of reference forecasts
+#' @param obs vector of observations
+#' @param N.eff user-defined effective sample size to be used in hypothesis test and for confidence bounds; if NA, the length of `obs` is used after removing missing values; default: NA
+#' @param conf.level confidence level for the confidence interval; default = 0.95
+#' @param handle.na how should missing values in forecasts and observations be handled; possible values are 'na.fail' and 'only.complete.triplets'; default: 'na.fail'
+#' @return vector with correlation difference, one-sided p-value, and central confidence interval at the user-defined confidence level
+#' @examples
+#' data(eurotempforecast)
+#' CorrDiff(rowMeans(ens), ens[, 1], obs)
+#' @seealso Corr
+#' @references Steiger (1980): Tests for comparing elements of a correlation matrix. Psychological Bulletin. http://dx.doi.org/10.1037/0033-2909.87.2.245 
+#' Zou (2007): Toward using confidence intervals to compare correlations. Psychological Methods. http://dx.doi.org/10.1037/1082-989X.12.4.399
+#' @export
+CorrDiff <- function(fcst, fcst.ref, obs, N.eff=NA, conf.level=0.95, handle.na="na.fail") {
 
-  # preprocess
-  l <- Preprocess(ens=ens, ens.ref=ens.ref, obs=obs)
-  ens <- l[["ens"]]
-  ens.ref <- l[["ens.ref"]]
-  obs <- l[["obs"]]
+  ## sanity checks
+  stopifnot(length(fcst) == length(obs))
+  stopifnot(length(fcst.ref) == length(obs))
 
-  N <- length(obs)
 
-  # calculate correlation coefficients and their confidence intervals
-  cc.ens <- Corr(ens, obs, probs=c(0.5*sign.level, 1-0.5*sign.level))[1:3]
-  cc.ref <- Corr(ens.ref, obs, probs=c(0.5*sign.level, 1-0.5*sign.level))[1:3]
-
-  # calculate correlation difference
-  cc.diff <- cc.ens[1] - cc.ref[1]
-
-  # auxiliary quantities
-  r12 <- cc.ens[1]
-  r13 <- cc.ref[1]
-  r23 <- cor(rowMeans(ens, na.rm=TRUE), rowMeans(ens.ref, na.rm=TRUE), 
-             use="pairwise.complete.obs")
-
-  # confidence interval, according to zou 2007, example 2
-  if (sign.level <= 0 | sign.level >= 1) {
-    sign.level <- NA
+  ## handle NA's
+  if (handle.na == "na.fail") {
+    if (any(is.na(c(fcst, fcst.ref, obs)))) {
+      stop("missing values")
+    }
+  } else if (handle.na == "only.complete.triplets") {
+    nna <- !is.na(fcst) & !is.na(fcst.ref) & !is.na(obs)
+    if (all(nna == FALSE)) {
+      stop("there are no complete sets of forecasts and observations")
+    }
+    fcst <- fcst[nna]
+    fcst.ref <- fcst.ref[nna]
+    obs <- obs[nna]
+  } else {
+    stop("unknown 'handle.na' argument")
   }
-  if (is.na(sign.level)) {
+
+
+  ## define sample size; the case of N <= 3 etc is handeled by the testing functions
+  N.eff <- N.eff[1L]
+  if (!is.na(N.eff)) {
+    N <- N.eff
+  } else {
+    N <- length(obs)
+  }
+  
+
+  ## calculate correlation coefficients and their confidence intervals
+  cc.fcst <- cor(fcst, obs)
+  cc.ref <- cor(fcst.ref, obs)
+
+
+  ## calculate correlation difference
+  cc.diff <- cc.fcst - cc.ref
+
+
+  ## auxiliary quantities
+  r12 <- cc.fcst
+  r13 <- cc.ref
+  r23 <- cor(fcst, fcst.ref)
+
+
+  ## confidence interval, according to zou 2007, example 2, fail if N <= 3
+  if (conf.level <= 0 | conf.level >= 1) {
+    conf.level <- NA
+  }
+  if (is.na(conf.level) | N <= 3) {
     L <- U <- NA
   } else {
     # individual confidence limits of cc.ens and cc.ref
-    l1 <- cc.ens[2]
-    u1 <- cc.ens[3]
-    l2 <- cc.ref[2]
-    u2 <- cc.ref[3]
-  
+    z.fcst <- 0.5 * log((1 + cc.fcst) / (1 - cc.fcst))
+    z.ref <- 0.5 * log((1 + cc.ref) / (1 - cc.ref))
+
+    alpha <- (1. - conf.level) / 2.
+    l1 <- tanh(atanh(r12) + qnorm(alpha)/sqrt(N-3))
+    u1 <- tanh(atanh(r12) + qnorm(1-alpha)/sqrt(N-3))
+    l2 <- tanh(atanh(r13) + qnorm(alpha)/sqrt(N-3))
+    u2 <- tanh(atanh(r13) + qnorm(1-alpha)/sqrt(N-3))
+
     # correlation between the two corcoefs r12 and r13
-    c.12.13 <- ((r23 - 0.5 * r12 * r13) * (1 - r12*r12 - 
+    c.12.13 <- 
+      ((r23 - 0.5 * r12 * r13) * (1 - r12*r12 - 
       r13*r13 - r23*r23) + r23*r23*r23) / ((1 - r12*r12) * 
       (1 - r13*r13))
     # lower confidence limit
     L <- r12 - r13 - sqrt((r12-l1)^2 + (u2 - r13)^2 - 
-      2*c.12.13*(r12-l1)*(u2-r13))
+         2*c.12.13*(r12-l1)*(u2-r13))
     # upper confidence limit
     U <- r12 - r13 + sqrt((u1 - r12)^2 + (r13-l2)^2 - 
-      2*c.12.13*(u1-r12)*(r13-l2))
+         2*c.12.13*(u1-r12)*(r13-l2))
   }
 
-  # N minus number of NA rows
-  N <- length(obs) - sum(is.na(rowSums(ens, na.rm=TRUE) + 
-       rowSums(ens.ref, na.rm=TRUE) + obs))
 
-  # p value of one-sided test for equality of dependent correlation
-  # coefficients (steiger 1980 Eq 7)
-  if (N < 4) {
+  ## p value of one-sided test for equality of dependent correlation
+  ## coefficients (steiger 1980 Eq 7)
+  if (N <= 3) {
     p.value <- NA
   } else {
     R <- (1-r12*r12-r13*r13-r23*r23) + 2*r12*r13*r23
@@ -73,10 +106,9 @@ CorrDiff <- function(ens, ens.ref, obs, sign.level=0.05) {
   }
 
 
-  #return
-  ret <- c(cc.diff, L, U, p.value)
-  names(ret) <- c("corr.diff", c("L","U"), "p.value")
+  ## return
+  ret <- c(cc.diff, p.value, L, U)
+  names(ret) <- c("corr.diff", "p.value", "L", "U")
   return(ret)
 }
-
 

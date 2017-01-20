@@ -1,8 +1,22 @@
-################################
-#                              #
-# PLOT RANK HISTOGRAM          #
-#                              #
-################################
+#' Plotting function for rank histograms
+#' @description Plots a rank histogram in different modes.
+#' @param rank.hist A vector or rank counts.
+#' @param mode Either "raw" (default) or "prob.paper". Whether to draw the raw rank histogram, or the rank histogram on probability paper. See Details.
+#' @details The plotting modes currently implemented are:
+#'
+#' raw (the default): A simple bar plot of the counts provided by the `rank.hist` argument.
+#'
+#' prob.paper: The individual counts given by `rank.hist` are transformed to their cumulative probabilities under the binomial distribution with parameters `N` and `1/K`, where `N=sum(rank.hist)` and `K=length(rank.hist)`. This transformation makes possible an assessment of the observed rank counts under the hypothesis of equally likely ranks. The y-axis on the left indicates the cumulative probabilities. The intervals on the right of the plot indicate central 90, 95, and 99 percent _simultaneous_ confidence intervals. That is, if all ranks were equally likely on average, approximately 90 percent of all rank histograms would be _completely_ contained in the 90 percent interval and approximately 10 percent of all rank histograms would have _at least_ one bar that falls outside this interval.
+#' @examples
+#' data(eurotempforecast)
+#' rank.hist <- Rankhist(ens, obs)
+#' PlotRankhist(rank.hist, mode="prob.paper")
+#' @references
+#' Anderson J.L. (1996). A Method for Producing and Evaluating Probabilistic Forecasts from Ensemble Model Integrations. J. Climate, 9, 1518--1530. DOI 10.1175/1520-0442(1996)009%3C1518:AMFPAE%3E2.0.CO;2.
+#' Broecker J. (2008). On reliability analysis of multi-categorical forecasts. Nonlin. Processes Geophys., 15, 661-673, DOI 10.5194/npg-15-661-2008.
+#' @seealso Rankhist, TestRankhist
+#' @export
+
 PlotRankhist <- function(rank.hist, mode="raw") {
 #
 #
@@ -59,7 +73,7 @@ PlotRankhist <- function(rank.hist, mode="raw") {
     offs <- 8
     bar.wd <- 0.9
     par(oma=c(0, 0, 0, 4), cex.lab=0.8, cex.axis=0.8)
-    plot(NULL, xlim=c(0,K+2), ylim=c(0,2*offs), axes=F, xlab="rank i", ylab=expression(nu[i]))
+    plot(NULL, xlim=c(0,K+2), ylim=c(0,2*offs), axes=F, xlab="rank i", ylab="")
     b <- barplot(lornuh + offs, add=T, axes=FALSE, width=bar.wd, col=gray(0.5))
     points(b[i.clip.min], lornuh[i.clip.min]+offs, pch=25, bg="black", cex=.6)
     points(b[i.clip.max], lornuh[i.clip.max]+offs, pch=24, bg="black", cex=.6)
@@ -68,7 +82,7 @@ PlotRankhist <- function(rank.hist, mode="raw") {
     axis(1, at=b, labels=xlabels)
     pvals <- c(0.001,0.01,0.1,0.5,0.9,0.99,0.999)
     yvals <- log(pvals/(1-pvals))
-    axis(2, at=yvals+offs, labels=pvals, las=2)
+    axis(2, at=yvals+offs, labels=pvals, las=1)
     # confidence intervals, corrected for multiple testing
     ci.str <- c("90%","95%","99%")
     k <- 0
@@ -85,8 +99,9 @@ PlotRankhist <- function(rank.hist, mode="raw") {
     }
   } else if (mode == "raw") {
     par(mar=c(3, 3, 1, 0), cex.lab=0.8, cex.axis=0.8)
-    bp <- barplot(rank.hist, xlab=NA, ylab=NA, col=gray(0.5))
+    bp <- barplot(rank.hist, xlab=NA, ylab=NA, col=gray(0.5), axes=FALSE)
     axis(1, at=bp, line=.2, labels=paste(1:length(rank.hist)))
+    axis(2, las=1)
     mtext(side=1, text="rank i", line=2, cex=.8)
     mtext(side=2, text="count", line=2, cex=.8)
   }
