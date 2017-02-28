@@ -1,4 +1,6 @@
-#' Calculate a skill score and assess uncertainty
+#' Calculate a skill score and assess uncertainty. 
+#'
+#' A skill score is defined as (mean score - mean reference score) / (perfect score - mean reference score). The skill score is zero if the mean score of the forecast equals the mean score of the reference forecast, and equals one if the mean score of the forecast equals the best possible score. Uncertainty is assessed by estimating the standard deviation of the skill score by propagation of uncertainty.
 #'
 #' @param scores vector of verification scores
 #' @param scores.ref vector of verification scores of the reference forecast, must be of the same length as `scores`
@@ -11,7 +13,7 @@
 #' SkillScore(EnsCrps(ens, obs), EnsCrps(ens[, 1:2], obs))
 #' @seealso ScoreDiff
 #' @export
-SkillScore <- function(scores, scores.ref, N.eff=NA, score.perf=0, handle.na="na.fail") {
+SkillScore <- function(scores, scores.ref, N.eff=NA, score.perf=0, handle.na=c('na.fail', 'use.pairwise.complete')) {
 
   ## sanity checks
   N.eff <- N.eff[1L]
@@ -22,19 +24,19 @@ SkillScore <- function(scores, scores.ref, N.eff=NA, score.perf=0, handle.na="na
 
 
   ## handle NA's
+  handle.na = match.arg(handle.na)
   if (handle.na == "na.fail") {
     if (any(is.na(c(scores, scores.ref)))) {
       stop("missing values")
     }
-  } else if (handle.na == "use.pairwise.complete") {
+  } 
+  if (handle.na == "use.pairwise.complete") {
     nna <- !is.na(scores) & !is.na(scores.ref)
     if (all(nna == FALSE)) {
       stop("there are no complete pairs of scores")
     }
     scores <- scores[nna]
     scores.ref <- scores.ref[nna]
-  } else {
-    stop("unknown 'handle.na' argument")
   }
 
 
