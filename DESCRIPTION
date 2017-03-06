@@ -1,6 +1,6 @@
 Package: SpecsVerification
-Version: 0.5-1
-Date: 2017-02-27
+Version: 0.5-2
+Date: 2017-03-06
 Title: Forecast Verification Routines for Ensemble Forecasts of Weather
         and Climate
 Authors@R: c(person(given="Stefan", family="Siegert",   role = c("aut", "cre"), 
@@ -19,10 +19,10 @@ Suggests: testthat
 LazyData: true
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2017-02-27 23:08:30 UTC; stefan
+Packaged: 2017-03-06 21:00:55 UTC; stefan
 Author: Stefan Siegert [aut, cre],
   Jonas Bhend [ctb],
   Igor Kroener [ctb],
   Matteo De Felice [ctb]
 Repository: CRAN
-Date/Publication: 2017-02-28 23:52:12
+Date/Publication: 2017-03-07 00:31:00
