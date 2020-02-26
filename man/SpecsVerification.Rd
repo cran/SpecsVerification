@@ -3,7 +3,6 @@
 \docType{package}
 \name{SpecsVerification}
 \alias{SpecsVerification}
-\alias{SpecsVerification-package}
 \title{SpecsVerification - Forecast verification routines}
 \description{
 SpecsVerification - Forecast verification routines

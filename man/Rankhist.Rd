@@ -25,6 +25,10 @@ Calculate the rank histogram for an archive of ensemble forecasts and their corr
 data(eurotempforecast)
 rh <- Rankhist(ens, obs)
 }
+\references{
+Anderson J.L. (1996). A Method for Producing and Evaluating Probabilistic Forecasts from Ensemble Model Integrations. J. Climate, 9, 1518--1530. 
+Hammill T.M. (2001). Interpretation of Rank Histograms for Verifying Ensemble Forecasts. Mon. Wea. Rev., 129, 550--560.
+}
 \seealso{
 PlotRankhist, TestRankhist
 }

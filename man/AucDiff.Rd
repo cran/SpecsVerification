@@ -4,8 +4,13 @@
 \alias{AucDiff}
 \title{Calculate difference between areas under the ROC curve (AUC) between a forecast and a reference forecast for the same observation, and estimate the variance of the AUC difference}
 \usage{
-AucDiff(fcst, fcst.ref, obs, handle.na = c("na.fail",
-  "only.complete.triplets"), use_fn = c("C++", "R"))
+AucDiff(
+  fcst,
+  fcst.ref,
+  obs,
+  handle.na = c("na.fail", "only.complete.triplets"),
+  use_fn = c("C++", "R")
+)
 }
 \arguments{
 \item{fcst}{vector of forecasts}
@@ -29,7 +34,7 @@ data(eurotempforecast)
 AucDiff(rowMeans(ens.bin), ens.bin[, 1], obs.bin)
 }
 \references{
-DeLong et al (1988): Comparing the Areas under Two or More Correlated Receiver Operating Characteristic Curves: A Nonparametric Approach. Biometrics. \doi{10.2307/2531595}
+DeLong et al (1988): Comparing the Areas under Two or More Correlated Receiver Operating Characteristic Curves: A Nonparametric Approach. Biometrics.  \url{https://www.jstor.org/stable/2531595}
 Sun and Xu (2014): Fast Implementation of DeLong's Algorithm for Comparing the Areas Under Correlated Receiver Operating Characteristic Curves. IEEE Sign Proc Let 21(11). \doi{10.1109/LSP.2014.2337313}
 }
 \seealso{

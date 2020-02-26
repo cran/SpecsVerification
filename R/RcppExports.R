@@ -9,7 +9,7 @@
 #' @seealso Auc AucDiff
 #' @export
 auc_cpp <- function(fcst, obs) {
-    .Call('SpecsVerification_auc_cpp', PACKAGE = 'SpecsVerification', fcst, obs)
+    .Call(`_SpecsVerification_auc_cpp`, fcst, obs)
 }
 
 #' Calculate AUC difference `AUC(fcst,obs) - AUC(fcst_ref, obs)` of two forecasts for the same observations, and the sampling standard deviation of the AUC difference (Internal C++ implementation)
@@ -21,7 +21,7 @@ auc_cpp <- function(fcst, obs) {
 #' @seealso Auc AucDiff
 #' @export
 aucdiff_cpp <- function(fcst, fcst_ref, obs) {
-    .Call('SpecsVerification_aucdiff_cpp', PACKAGE = 'SpecsVerification', fcst, fcst_ref, obs)
+    .Call(`_SpecsVerification_aucdiff_cpp`, fcst, fcst_ref, obs)
 }
 
 #' Dress CRPS
@@ -32,7 +32,7 @@ aucdiff_cpp <- function(fcst, fcst_ref, obs) {
 #' @return crps
 #' @export
 dresscrps_cpp <- function(m, s, y) {
-    .Call('SpecsVerification_dresscrps_cpp', PACKAGE = 'SpecsVerification', m, s, y)
+    .Call(`_SpecsVerification_dresscrps_cpp`, m, s, y)
 }
 
 #' CRPS for ensemble forecasts (C++ implementation)
@@ -44,6 +44,6 @@ dresscrps_cpp <- function(m, s, y) {
 #' @return vector of crps values
 #' @export
 enscrps_cpp <- function(ens, obs, R_new) {
-    .Call('SpecsVerification_enscrps_cpp', PACKAGE = 'SpecsVerification', ens, obs, R_new)
+    .Call(`_SpecsVerification_enscrps_cpp`, ens, obs, R_new)
 }
 

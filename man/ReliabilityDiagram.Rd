@@ -4,9 +4,17 @@
 \alias{ReliabilityDiagram}
 \title{Reliability diagram for probability forecasts}
 \usage{
-ReliabilityDiagram(probs, obs, bins = 10, nboot = 500, plot = FALSE,
-  plot.refin = TRUE, cons.probs = 0.95, attributes = FALSE,
-  handle.na = c("na.fail", "use.pairwise.complete"))
+ReliabilityDiagram(
+  probs,
+  obs,
+  bins = 10,
+  nboot = 500,
+  plot = FALSE,
+  plot.refin = TRUE,
+  cons.probs = 0.95,
+  attributes = FALSE,
+  handle.na = c("na.fail", "use.pairwise.complete")
+)
 }
 \arguments{
 \item{probs}{vector of N probability forecasts for the event obs=1}

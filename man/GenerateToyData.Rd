@@ -4,9 +4,20 @@
 \alias{GenerateToyData}
 \title{Generate artificial data for ensemble verification using a signal-plus-noise model}
 \usage{
-GenerateToyData(N = 20, mu.y = 0, s.s = 7, s.eps = 6, mu.x = 0,
-  beta = 0.2, s.eta = 8, K = 10, mu.x.ref = NA, beta.ref = NA,
-  s.eta.ref = NA, K.ref = NA)
+GenerateToyData(
+  N = 20,
+  mu.y = 0,
+  s.s = 7,
+  s.eps = 6,
+  mu.x = 0,
+  beta = 0.2,
+  s.eta = 8,
+  K = 10,
+  mu.x.ref = NA,
+  beta.ref = NA,
+  s.eta.ref = NA,
+  K.ref = NA
+)
 }
 \arguments{
 \item{N}{number of forecasts and observations}

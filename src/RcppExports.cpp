@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // auc_cpp
 NumericVector auc_cpp(NumericVector fcst, NumericVector obs);
-RcppExport SEXP SpecsVerification_auc_cpp(SEXP fcstSEXP, SEXP obsSEXP) {
+RcppExport SEXP _SpecsVerification_auc_cpp(SEXP fcstSEXP, SEXP obsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // aucdiff_cpp
 std::vector<double> aucdiff_cpp(std::vector<double> fcst, std::vector<double> fcst_ref, std::vector<bool> obs);
-RcppExport SEXP SpecsVerification_aucdiff_cpp(SEXP fcstSEXP, SEXP fcst_refSEXP, SEXP obsSEXP) {
+RcppExport SEXP _SpecsVerification_aucdiff_cpp(SEXP fcstSEXP, SEXP fcst_refSEXP, SEXP obsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -33,7 +33,7 @@ END_RCPP
 }
 // dresscrps_cpp
 double dresscrps_cpp(NumericVector m, NumericVector s, double y);
-RcppExport SEXP SpecsVerification_dresscrps_cpp(SEXP mSEXP, SEXP sSEXP, SEXP ySEXP) {
+RcppExport SEXP _SpecsVerification_dresscrps_cpp(SEXP mSEXP, SEXP sSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -46,7 +46,7 @@ END_RCPP
 }
 // enscrps_cpp
 NumericVector enscrps_cpp(NumericMatrix ens, NumericVector obs, double R_new);
-RcppExport SEXP SpecsVerification_enscrps_cpp(SEXP ensSEXP, SEXP obsSEXP, SEXP R_newSEXP) {
+RcppExport SEXP _SpecsVerification_enscrps_cpp(SEXP ensSEXP, SEXP obsSEXP, SEXP R_newSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;

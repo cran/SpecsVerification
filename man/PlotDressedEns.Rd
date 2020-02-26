@@ -4,8 +4,13 @@
 \alias{PlotDressedEns}
 \title{Plot a series forecast distributions of dressed ensembles}
 \usage{
-PlotDressedEns(dressed.ens, add = FALSE, obs = NULL, plot.ens = FALSE,
-  plot.ker = FALSE)
+PlotDressedEns(
+  dressed.ens,
+  add = FALSE,
+  obs = NULL,
+  plot.ens = FALSE,
+  plot.ker = FALSE
+)
 }
 \arguments{
 \item{dressed.ens}{An object of class `dressed.ens`. See ?DressEnsemble for details.}

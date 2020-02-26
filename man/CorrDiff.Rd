@@ -4,8 +4,14 @@
 \alias{CorrDiff}
 \title{Calculate correlation difference between a forecast and a reference forecast, and assess uncertainty}
 \usage{
-CorrDiff(fcst, fcst.ref, obs, N.eff = NA, conf.level = 0.95,
-  handle.na = "na.fail")
+CorrDiff(
+  fcst,
+  fcst.ref,
+  obs,
+  N.eff = NA,
+  conf.level = 0.95,
+  handle.na = "na.fail"
+)
 }
 \arguments{
 \item{fcst}{vector of forecasts}

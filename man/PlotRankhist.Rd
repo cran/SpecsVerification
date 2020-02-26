@@ -26,6 +26,10 @@ data(eurotempforecast)
 rank.hist <- Rankhist(ens, obs)
 PlotRankhist(rank.hist, mode="prob.paper")
 }
+\references{
+Anderson J.L. (1996). A Method for Producing and Evaluating Probabilistic Forecasts from Ensemble Model Integrations. J. Climate, 9, 1518--1530.
+Broecker J. (2008). On reliability analysis of multi-categorical forecasts. Nonlin. Processes Geophys., 15, 661-673.
+}
 \seealso{
 Rankhist, TestRankhist
 }

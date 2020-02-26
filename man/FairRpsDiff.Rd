@@ -4,8 +4,7 @@
 \alias{FairRpsDiff}
 \title{Calculate FairRps Difference (deprecated, use function ScoreDiff instead)}
 \usage{
-FairRpsDiff(ens, ens.ref, obs, probs = NA, format = c("category",
-  "members"))
+FairRpsDiff(ens, ens.ref, obs, probs = NA, format = c("category", "members"))
 }
 \arguments{
 \item{ens}{the ensemble}

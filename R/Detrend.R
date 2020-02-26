@@ -12,7 +12,7 @@
 
 Detrend <- function(x, demean=TRUE) {
   # detrend using the row means
-  if (class(x) == "matrix") {
+  if (is(x, 'matrix')) {
     xx <- rowMeans(x, na.rm=TRUE)
   } else {
     xx <- x

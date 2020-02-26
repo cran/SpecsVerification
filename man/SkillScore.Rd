@@ -4,8 +4,13 @@
 \alias{SkillScore}
 \title{Calculate a skill score and assess uncertainty.}
 \usage{
-SkillScore(scores, scores.ref, N.eff = NA, score.perf = 0,
-  handle.na = c("na.fail", "use.pairwise.complete"))
+SkillScore(
+  scores,
+  scores.ref,
+  N.eff = NA,
+  score.perf = 0,
+  handle.na = c("na.fail", "use.pairwise.complete")
+)
 }
 \arguments{
 \item{scores}{vector of verification scores}
